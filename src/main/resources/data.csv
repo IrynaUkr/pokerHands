@@ -1,0 +1,14 @@
+char, CardValue
+2, TWO
+3, THREE
+4, FOUR
+5, FIVE
+6, SIX
+7, SEVEN
+8, EIGHT
+9, NINE
+T, TEN
+J, JACK
+Q, QUEEN
+K, KING
+A, ACE

@@ -1,7 +1,7 @@
 ## Poker Hands
 
 About this Kata
-[.gitignore](..%2Fsaeting-challenge%2F.gitignore)
+
 Problem Description
 
 Your job is to compare several pairs of poker hands and to indicate which, if either, has a higher rank.
