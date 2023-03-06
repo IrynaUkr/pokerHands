@@ -29,10 +29,12 @@ public class PokerHandsComparator implements HandsComparator {
         if (isStraightFlush(hand)) {
             return Rank.Straight_flush;
         }
+        if (isFourOfAKind(hand)) {
+            return Rank.Four_of_a_kind;
+        }
 
         return Rank.High_Card;
     }
-
 
 
     public boolean isStraightFlush(Card[] hand) {
@@ -51,5 +53,20 @@ public class PokerHandsComparator implements HandsComparator {
         }
         return true;
     }
+
+    public boolean isFourOfAKind(Card[] hand) {
+        List<String> uniques = Arrays.stream(hand)
+                .map(c -> c.getValue().symbol)
+                .distinct()
+                .collect(Collectors.toList());
+        if (uniques.size() != 2) {
+            return false;
+        } else {
+            return Arrays.stream(hand).filter(c -> c.getValue().symbol == uniques.get(0)).count() == 4 ||
+                    Arrays.stream(hand).filter(c -> c.getValue().symbol == uniques.get(1)).count() == 4;
+        }
+
+    }
+
 
 }

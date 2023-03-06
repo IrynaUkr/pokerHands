@@ -46,7 +46,12 @@ class PokerHandsComparatorTest {
         assertTrue(comparator.isStraightFlush(cardsStraightFlash));
         assertFalse(comparator.isStraightFlush(cardsFourOfKind));
     }
-
+    @Test
+    void shouldReturnTrueIfFourOfKind() {
+        //4 cards with the same value. Ranked by the value of the 4 cards.
+        assertTrue(comparator.isFourOfAKind(cardsFourOfKind));
+        assertFalse(comparator.isFourOfAKind(cardsStraightFlash));
+    }
 
 
 }
