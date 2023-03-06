@@ -18,8 +18,10 @@ class PokerHandsComparatorTest {
     Card nineD;
     Card eightD;
     Card sevenD;
+    Card sevenH;
     Card[] cardsStraightFlash;
     Card[] cardsFourOfKind;
+    Card[] cardsFullHouse;
 
     @BeforeEach
     void SetUp() {
@@ -31,8 +33,10 @@ class PokerHandsComparatorTest {
         nineD = new Card(Club.D, Value.NINE);
         eightD = new Card(Club.D, Value.EIGHT);
         sevenD = new Card(Club.D, Value.SEVEN);
+        sevenH = new Card(Club.H, Value.SEVEN);
         cardsStraightFlash = new Card []{jackD,tD,nineD, eightD, sevenD};
         cardsFourOfKind = new Card[]{jackC, jackD, jackS, jackH, tD};
+        cardsFullHouse = new Card[]{jackD,jackC,jackS,sevenD,sevenH };
     }
 
     @Test
@@ -51,6 +55,11 @@ class PokerHandsComparatorTest {
         //4 cards with the same value. Ranked by the value of the 4 cards.
         assertTrue(comparator.isFourOfAKind(cardsFourOfKind));
         assertFalse(comparator.isFourOfAKind(cardsStraightFlash));
+    }
+
+    @Test
+    void shouldReturnTrueIfFullHouse(){
+        assertTrue(comparator.isFullHouse(cardsFullHouse));
     }
 
 

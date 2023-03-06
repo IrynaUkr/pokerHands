@@ -2,8 +2,8 @@ package org.example.engine;
 
 import org.example.entity.*;
 
-
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,10 +55,7 @@ public class PokerHandsComparator implements HandsComparator {
     }
 
     public boolean isFourOfAKind(Card[] hand) {
-        List<String> uniques = Arrays.stream(hand)
-                .map(c -> c.getValue().symbol)
-                .distinct()
-                .collect(Collectors.toList());
+        List<String> uniques = getDistinctValueCards(hand);
         if (uniques.size() != 2) {
             return false;
         } else {
@@ -68,5 +65,26 @@ public class PokerHandsComparator implements HandsComparator {
 
     }
 
+    public boolean isFullHouse(Card[] hand) {
+        //3 cards of the same value, with the remaining 2 cards forming a pair.
+        // Ranked by the value of the 3 cards.
+        HashMap<String, Integer> frequency = new HashMap<>();
+        for (int i = 0; i < hand.length; i++) {
+            String symbol = hand[i].getValue().symbol;
+            if (frequency.containsKey(symbol)) {
+                Integer freq = frequency.get(symbol);
+                frequency.put(symbol, freq + 1);
+            } else {
+                frequency.put(symbol, 1);
+            }
+        }
+        return frequency.size() == 2;
+    }
 
+    private static List<String> getDistinctValueCards(Card[] hand) {
+        return Arrays.stream(hand)
+                .map(c -> c.getValue().symbol)
+                .distinct()
+                .collect(Collectors.toList());
+    }
 }
