@@ -31,7 +31,7 @@ public class PokerHandsComparator implements HandsComparator {
             //Hands which are both flushes are ranked using the rules for High Card.
             return getResultSameFlush(whiteHand, blackHand);
         }
-        return new GameResult(ResultOption.T, null);
+        return new GameResult(ResultOption.T, null, "Tie");
     }
 
     private GameResult getResultSameFlush(Card[] whiteHand, Card[] blackHand) {
@@ -43,12 +43,12 @@ public class PokerHandsComparator implements HandsComparator {
         Arrays.sort(blackHand);
         for (int i = 4; i >= 0; i--){
             if(whiteHand[i].compareTo(blackHand[i])>0){
-                return new GameResult(ResultOption.W, Player.White);
+                return new GameResult(ResultOption.W, Player.White, "with high card"+whiteHand[i].getValue());
             } else if (whiteHand[i].compareTo(blackHand[i])<0) {
-                return new GameResult(ResultOption.W, Player.Black);
+                return new GameResult(ResultOption.W, Player.Black, "with high card" + blackHand[i].getValue() );
             }
         }
-        return new GameResult(ResultOption.T, null);
+        return new GameResult(ResultOption.T, null, "Tie");
     }
 
     public GameResult getResultSameFullHouse(Card[] whiteHand, Card[] blackHand) {
@@ -65,11 +65,11 @@ public class PokerHandsComparator implements HandsComparator {
 
     private static GameResult getGameResultByRank(int whiteHandRank, int blackHandRank) {
         if (whiteHandRank > blackHandRank) {
-            return new GameResult(ResultOption.W, Player.White);
+            return new GameResult(ResultOption.W, Player.White, "");
         } else if (whiteHandRank < blackHandRank) {
-            return new GameResult(ResultOption.W, Player.Black);
+            return new GameResult(ResultOption.W, Player.Black, "");
         }
-        return new GameResult(ResultOption.T, null);
+        return new GameResult(ResultOption.T, null, "Tie");
     }
 
     private static String getRankOfTheMostFrequentCard(Card[] cards, int frequency) {
@@ -87,11 +87,13 @@ public class PokerHandsComparator implements HandsComparator {
 
 
     public GameResult getResultSameHandsStraightFlush(Card[] whiteHand, Card[] blackHand) {
-        if (getHighCard(whiteHand).compareTo(getHighCard(blackHand)) > 0) {
-            return new GameResult(ResultOption.W, Player.White);
-        } else if (getHighCard(whiteHand).compareTo(getHighCard(blackHand)) < 0) {
-            return new GameResult(ResultOption.W, Player.Black);
-        } else return new GameResult(ResultOption.T, null);
+        Card whiteHighCard = getHighCard(whiteHand);
+        Card blackHighCard = getHighCard(blackHand);
+        if (whiteHighCard.compareTo(blackHighCard) > 0) {
+            return new GameResult(ResultOption.W, Player.White, "with straight flush:"+whiteHighCard+"over"+blackHighCard );
+        } else if (whiteHighCard.compareTo(blackHighCard) < 0) {
+            return new GameResult(ResultOption.W, Player.Black, "with straight flush:"+blackHighCard+"over"+whiteHighCard );
+        } else return new GameResult(ResultOption.T, null, "Tie");
     }
 
     private Rank calculateRank(Card[] hand) {
