@@ -123,14 +123,23 @@ class PokerHandsComparatorTest {
 
     @Test
     void getResultSameRanksFullHouse() {
-        Card[] waitCards = parseStringToCards("2D 2H 2C 5S 6H");
+        Card[] whiteCards = parseStringToCards("2D 2H 2C 5S 6H");
         Card[] blackCards = parseStringToCards("3D 3H 3C 8S 6H");
 
-        GameResult resultSameFourOfKind = comparator.getResultSameFullHouse(waitCards, blackCards);
+        GameResult resultSameFourOfKind = comparator.getResultSameFullHouse(whiteCards, blackCards);
 
         assertEquals(Player.Black, resultSameFourOfKind.getPlayer());
         assertEquals(ResultOption.W, resultSameFourOfKind.getResult());
+    }
+    @Test
+    void getResultHighHandTest(){
+        Card[] whiteCards = parseStringToCards("2C 3H 4S 8C KH");
+        Card[] blackCards = parseStringToCards("2H 3D 5S 9C KD");
 
+        GameResult resultSameFourOfKind = comparator.getResultHighHand(whiteCards, blackCards);
+
+        assertEquals(Player.Black, resultSameFourOfKind.getPlayer());
+        assertEquals(ResultOption.W, resultSameFourOfKind.getResult());
     }
 
 

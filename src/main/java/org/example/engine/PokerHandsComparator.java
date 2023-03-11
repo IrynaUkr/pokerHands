@@ -23,11 +23,31 @@ public class PokerHandsComparator implements HandsComparator {
             // Ranked by the value of the 4 cards.
             return getResultSameFourOfKind(whiteHand, blackHand);
         }
-        if(rank.equals(Rank.Full_House)){
+        if (rank.equals(Rank.Full_House)) {
             // Ranked by the value of the 3 cards.
             return getResultSameFullHouse(whiteHand, blackHand);
         }
+        if (rank.equals(Rank.Flush)) {
+            //Hands which are both flushes are ranked using the rules for High Card.
+            return getResultSameFlush(whiteHand, blackHand);
+        }
+        return new GameResult(ResultOption.T, null);
+    }
 
+    private GameResult getResultSameFlush(Card[] whiteHand, Card[] blackHand) {
+        return getResultHighHand(whiteHand, blackHand);
+    }
+
+    public GameResult getResultHighHand(Card[] whiteHand, Card[] blackHand) {
+        Arrays.sort(whiteHand);
+        Arrays.sort(blackHand);
+        for (int i = 4; i >= 0; i--){
+            if(whiteHand[i].compareTo(blackHand[i])>0){
+                return new GameResult(ResultOption.W, Player.White);
+            } else if (whiteHand[i].compareTo(blackHand[i])<0) {
+                return new GameResult(ResultOption.W, Player.Black);
+            }
+        }
         return new GameResult(ResultOption.T, null);
     }
 
@@ -58,11 +78,11 @@ public class PokerHandsComparator implements HandsComparator {
                 .stream()
                 .filter(entry -> entry.getValue() == frequency)
                 .findFirst();
-       if(first.isPresent()){
-           return first.get().getKey();
-       } else{
-           throw new IllegalArgumentException("there is not four of kind case");
-       }
+        if (first.isPresent()) {
+            return first.get().getKey();
+        } else {
+            throw new IllegalArgumentException("there is not four of kind case");
+        }
     }
 
 
