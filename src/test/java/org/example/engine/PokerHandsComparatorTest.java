@@ -3,13 +3,18 @@ package org.example.engine;
 import org.example.entity.Card;
 import org.example.entity.Club;
 import org.example.entity.Value;
+import org.example.parser.InputParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class PokerHandsComparatorTest {
     PokerHandsComparator comparator =new PokerHandsComparator();
+    InputParser inputParser = new InputParser();
+
     Card jackC;
     Card jackS;
     Card jackH;
@@ -37,6 +42,7 @@ class PokerHandsComparatorTest {
         cardsStraightFlash = new Card []{jackD,tD,nineD, eightD, sevenD};
         cardsFourOfKind = new Card[]{jackC, jackD, jackS, jackH, tD};
         cardsFullHouse = new Card[]{jackD,jackC,jackS,sevenD,sevenH };
+
     }
 
     @Test
@@ -60,6 +66,23 @@ class PokerHandsComparatorTest {
     @Test
     void shouldReturnTrueIfFullHouse(){
         assertTrue(comparator.isFullHouse(cardsFullHouse));
+    }
+
+    @Test
+    void shouldReturnTrueIfFlushTest(){
+        String flash = "2H 3H 7H 9H QH";
+        String notFlash ="2D 3H 5C 9S KH";
+        Card[] flashCards = parseStringToCard(flash);
+        Card[] notFlushCards = parseStringToCard(notFlash);
+
+        assertTrue(comparator.isFlush(flashCards));
+        assertFalse(comparator.isFlush(notFlushCards));
+    }
+
+    public Card[] parseStringToCard(String hand){
+        return Arrays.stream(hand.split(" ")).map(
+                x -> inputParser.getCard(x)
+        ).toArray(Card[]::new);
     }
 
 

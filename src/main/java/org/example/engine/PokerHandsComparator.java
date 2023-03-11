@@ -80,6 +80,20 @@ public class PokerHandsComparator implements HandsComparator {
         }
         return frequency.size() == 2;
     }
+    // Hand contains 5 cards of the same suit. Hands which are both flushes are ranked using the rules for High Card.
+    public boolean isFlush(Card[] hand){
+        HashMap<String, Integer> frequency = new HashMap<>();
+        for (Card card : hand) {
+            String suit = card.getClub().toString();
+            if (frequency.containsKey(suit)) {
+                Integer freq = frequency.get(suit);
+                frequency.put(suit, freq + 1);
+            } else {
+                frequency.put(suit, 1);
+            }
+        }
+        return frequency.size() == 1;
+    }
 
     private static List<String> getDistinctValueCards(Card[] hand) {
         return Arrays.stream(hand)

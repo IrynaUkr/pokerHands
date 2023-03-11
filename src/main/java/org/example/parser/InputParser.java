@@ -16,7 +16,7 @@ public class InputParser {
         ).toArray(Card[]::new);
     }
 
-    private static Card getCard(String glyph) {
+    public static Card getCard(String glyph) {
         Club club = Club.valueOf(glyph.substring(1, 2));
         Value value = Value.getValueByChar(glyph.substring(0, 1));
         return new Card(club, value);
