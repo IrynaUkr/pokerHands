@@ -79,11 +79,41 @@ class PokerHandsComparatorTest {
         assertFalse(comparator.isFlush(notFlushCards));
     }
 
-    public Card[] parseStringToCard(String hand){
-        return Arrays.stream(hand.split(" ")).map(
-                x -> inputParser.getCard(x)
-        ).toArray(Card[]::new);
+    @Test
+    void shouldReturnTrueIfStraightPresentTest(){
+        String straight = "2D 3H 4C 5S 6H";
+        String notStraight ="2D 3H 5C 9S KH";
+        Card[] straightCards = parseStringToCard(straight);
+        Card[] notStraightCards = parseStringToCard(notStraight);
+
+        assertTrue(comparator.isStraight(straightCards));
+        assertFalse(comparator.isFlush(notStraightCards));
+    }
+
+    @Test
+    void shouldReturnTrueIfTwoPairsPresentTest(){
+        String pairs = "2D 2H 4C 4S 6H";
+        String notPairs ="2D 3H 5C 9S KH";
+        Card[] pairsCards = parseStringToCard(pairs);
+        Card[] notPairsCards = parseStringToCard(notPairs);
+        assertTrue(comparator.isTwoPairs(pairsCards));
+        assertFalse(comparator.isTwoPairs(notPairsCards));
+    }
+
+    @Test
+    void shouldReturnTrueIfOnePairPresentTest(){
+        String pairs = "2D 2H 4C 8S 6H";
+        String notPairs ="2D 3H 5C 9S KH";
+        Card[] pairsCards = parseStringToCard(pairs);
+        Card[] notPairsCards = parseStringToCard(notPairs);
+        assertTrue(comparator.isOnePairPresent(pairsCards));
+        assertFalse(comparator.isOnePairPresent(notPairsCards));
     }
 
 
+    public Card[] parseStringToCard(String hand){
+        return Arrays.stream(hand.split(" ")).map(
+                InputParser::getCard
+        ).toArray(Card[]::new);
+    }
 }
