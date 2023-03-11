@@ -11,10 +11,10 @@ public class PokerHandsComparator implements HandsComparator {
         Rank blackHandRank = calculateRank(blackHand);
         Rank whiteHandRank = calculateRank(whiteHand);
 
-        return getGameResultByRunk(whiteHandRank.rank, blackHandRank.rank);
+        return getGameResultByRank(whiteHandRank.rank, blackHandRank.rank);
     }
 
-    public GameResult compareHandsIfRankIsSame(Rank rank, Card[] whiteHand, Card[] blackHand) {
+    public GameResult compareHandsIfRanksAreSame(Rank rank, Card[] whiteHand, Card[] blackHand) {
         if (rank.equals(Rank.Straight_flush)) {
             //Ranked by the highest card in the hand.
             return getResultSameHandsStraightFlush(whiteHand, blackHand);
@@ -23,17 +23,27 @@ public class PokerHandsComparator implements HandsComparator {
             // Ranked by the value of the 4 cards.
             return getResultSameFourOfKind(whiteHand, blackHand);
         }
+        if(rank.equals(Rank.Full_House)){
+            // Ranked by the value of the 3 cards.
+            return getResultSameFullHouse(whiteHand, blackHand);
+        }
 
         return new GameResult(ResultOption.T, null);
     }
 
-    public GameResult getResultSameFourOfKind(Card[] whiteHand, Card[] blackHand) {
-        int whiteHandRank = Integer.parseInt(getRankOfTheMostFrequentCard(whiteHand));
-        int blackHandRank = Integer.parseInt(getRankOfTheMostFrequentCard(blackHand));
-        return getGameResultByRunk(whiteHandRank, blackHandRank);
+    public GameResult getResultSameFullHouse(Card[] whiteHand, Card[] blackHand) {
+        int whiteHandRank = Integer.parseInt(getRankOfTheMostFrequentCard(whiteHand, 3));
+        int blackHandRank = Integer.parseInt(getRankOfTheMostFrequentCard(blackHand, 3));
+        return getGameResultByRank(whiteHandRank, blackHandRank);
     }
 
-    private static GameResult getGameResultByRunk(int whiteHandRank, int blackHandRank) {
+    public GameResult getResultSameFourOfKind(Card[] whiteHand, Card[] blackHand) {
+        int whiteHandRank = Integer.parseInt(getRankOfTheMostFrequentCard(whiteHand, 4));
+        int blackHandRank = Integer.parseInt(getRankOfTheMostFrequentCard(blackHand, 4));
+        return getGameResultByRank(whiteHandRank, blackHandRank);
+    }
+
+    private static GameResult getGameResultByRank(int whiteHandRank, int blackHandRank) {
         if (whiteHandRank > blackHandRank) {
             return new GameResult(ResultOption.W, Player.White);
         } else if (whiteHandRank < blackHandRank) {
@@ -42,11 +52,11 @@ public class PokerHandsComparator implements HandsComparator {
         return new GameResult(ResultOption.T, null);
     }
 
-    private static String getRankOfTheMostFrequentCard(Card[] whiteHand) {
-        Optional<Map.Entry<String, Integer>> first = getValueFrequency(whiteHand)
+    private static String getRankOfTheMostFrequentCard(Card[] cards, int frequency) {
+        Optional<Map.Entry<String, Integer>> first = getValueFrequency(cards)
                 .entrySet()
                 .stream()
-                .filter(entry -> entry.getValue() == 4)
+                .filter(entry -> entry.getValue() == frequency)
                 .findFirst();
        if(first.isPresent()){
            return first.get().getKey();

@@ -10,7 +10,7 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.*;
 
 class PokerHandsComparatorTest {
-    PokerHandsComparator comparator =new PokerHandsComparator();
+    PokerHandsComparator comparator = new PokerHandsComparator();
 
     Card jackC;
     Card jackS;
@@ -36,9 +36,9 @@ class PokerHandsComparatorTest {
         eightD = new Card(Club.D, Value.EIGHT);
         sevenD = new Card(Club.D, Value.SEVEN);
         sevenH = new Card(Club.H, Value.SEVEN);
-        cardsStraightFlash = new Card []{jackD,tD,nineD, eightD, sevenD};
+        cardsStraightFlash = new Card[]{jackD, tD, nineD, eightD, sevenD};
         cardsFourOfKind = new Card[]{jackC, jackD, jackS, jackH, tD};
-        cardsFullHouse = new Card[]{jackD,jackC,jackS,sevenD,sevenH };
+        cardsFullHouse = new Card[]{jackD, jackC, jackS, sevenD, sevenH};
 
     }
 
@@ -48,11 +48,12 @@ class PokerHandsComparatorTest {
     }
 
     @Test
-    void shouldReturnTrueIfStraightFlush(){
+    void shouldReturnTrueIfStraightFlush() {
         //5 cards of the same suit with consecutive values
         assertTrue(comparator.isStraightFlush(cardsStraightFlash));
         assertFalse(comparator.isStraightFlush(cardsFourOfKind));
     }
+
     @Test
     void shouldReturnTrueIfFourOfKind() {
         //4 cards with the same value. Ranked by the value of the 4 cards.
@@ -61,69 +62,82 @@ class PokerHandsComparatorTest {
     }
 
     @Test
-    void shouldReturnTrueIfFullHouse(){
+    void shouldReturnTrueIfFullHouse() {
         assertTrue(comparator.isFullHouse(cardsFullHouse));
     }
 
     @Test
-    void shouldReturnTrueIfFlushTest(){
+    void shouldReturnTrueIfFlushTest() {
         String flash = "2H 3H 7H 9H QH";
-        String notFlash ="2D 3H 5C 9S KH";
-        Card[] flashCards = parseStringToCard(flash);
-        Card[] notFlushCards = parseStringToCard(notFlash);
+        String notFlash = "2D 3H 5C 9S KH";
+        Card[] flashCards = parseStringToCards(flash);
+        Card[] notFlushCards = parseStringToCards(notFlash);
 
         assertTrue(comparator.isFlush(flashCards));
         assertFalse(comparator.isFlush(notFlushCards));
     }
 
     @Test
-    void shouldReturnTrueIfStraightPresentTest(){
+    void shouldReturnTrueIfStraightPresentTest() {
         String straight = "2D 3H 4C 5S 6H";
-        String notStraight ="2D 3H 5C 9S KH";
-        Card[] straightCards = parseStringToCard(straight);
-        Card[] notStraightCards = parseStringToCard(notStraight);
+        String notStraight = "2D 3H 5C 9S KH";
+        Card[] straightCards = parseStringToCards(straight);
+        Card[] notStraightCards = parseStringToCards(notStraight);
 
         assertTrue(comparator.isStraight(straightCards));
         assertFalse(comparator.isFlush(notStraightCards));
     }
 
     @Test
-    void shouldReturnTrueIfTwoPairsPresentTest(){
+    void shouldReturnTrueIfTwoPairsPresentTest() {
         String pairs = "2D 2H 4C 4S 6H";
-        String notPairs ="2D 3H 5C 9S KH";
-        Card[] pairsCards = parseStringToCard(pairs);
-        Card[] notPairsCards = parseStringToCard(notPairs);
+        String notPairs = "2D 3H 5C 9S KH";
+        Card[] pairsCards = parseStringToCards(pairs);
+        Card[] notPairsCards = parseStringToCards(notPairs);
         assertTrue(comparator.isTwoPairs(pairsCards));
         assertFalse(comparator.isTwoPairs(notPairsCards));
     }
 
     @Test
-    void shouldReturnTrueIfOnePairPresentTest(){
+    void shouldReturnTrueIfOnePairPresentTest() {
         String pairs = "2D 2H 4C 8S 6H";
-        String notPairs ="2D 3H 5C 9S KH";
-        Card[] pairsCards = parseStringToCard(pairs);
-        Card[] notPairsCards = parseStringToCard(notPairs);
+        String notPairs = "2D 3H 5C 9S KH";
+        Card[] pairsCards = parseStringToCards(pairs);
+        Card[] notPairsCards = parseStringToCards(notPairs);
         assertTrue(comparator.isOnePairPresent(pairsCards));
         assertFalse(comparator.isOnePairPresent(notPairsCards));
     }
 
     @Test
-    void getResultSameFourOfKindTest(){
+    void getResultSameFourOfKindTest() {
         String white = "2D 2H 2C 2S 6H";
-        String black ="3D 3H 3C 3S 6H";
-        Card[] waitCards = parseStringToCard(white);
-        Card[] blackCards = parseStringToCard(black);
+        String black = "3D 3H 3C 3S 6H";
+        Card[] waitCards = parseStringToCards(white);
+        Card[] blackCards = parseStringToCards(black);
 
         GameResult resultSameFourOfKind = comparator.getResultSameFourOfKind(waitCards, blackCards);
 
         assertEquals(Player.Black, resultSameFourOfKind.getPlayer());
-        assertEquals(ResultOption.W,resultSameFourOfKind.getResult());
+        assertEquals(ResultOption.W, resultSameFourOfKind.getResult());
+    }
+
+    @Test
+    void getResultSameRanksFullHouse() {
+        Card[] waitCards = parseStringToCards("2D 2H 2C 5S 6H");
+        Card[] blackCards = parseStringToCards("3D 3H 3C 8S 6H");
+
+        GameResult resultSameFourOfKind = comparator.getResultSameFullHouse(waitCards, blackCards);
+
+        assertEquals(Player.Black, resultSameFourOfKind.getPlayer());
+        assertEquals(ResultOption.W, resultSameFourOfKind.getResult());
+
     }
 
 
-    public Card[] parseStringToCard(String hand){
+    public Card[] parseStringToCards(String hand) {
         return Arrays.stream(hand.split(" ")).map(
                 InputParser::getCard
         ).toArray(Card[]::new);
     }
+
 }
