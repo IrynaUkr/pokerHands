@@ -1,8 +1,6 @@
 package org.example.engine;
 
-import org.example.entity.Card;
-import org.example.entity.Club;
-import org.example.entity.Value;
+import org.example.entity.*;
 import org.example.parser.InputParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PokerHandsComparatorTest {
     PokerHandsComparator comparator =new PokerHandsComparator();
-    InputParser inputParser = new InputParser();
 
     Card jackC;
     Card jackS;
@@ -108,6 +105,19 @@ class PokerHandsComparatorTest {
         Card[] notPairsCards = parseStringToCard(notPairs);
         assertTrue(comparator.isOnePairPresent(pairsCards));
         assertFalse(comparator.isOnePairPresent(notPairsCards));
+    }
+
+    @Test
+    void getResultSameFourOfKindTest(){
+        String white = "2D 2H 2C 2S 6H";
+        String black ="3D 3H 3C 3S 6H";
+        Card[] waitCards = parseStringToCard(white);
+        Card[] blackCards = parseStringToCard(black);
+
+        GameResult resultSameFourOfKind = comparator.getResultSameFourOfKind(waitCards, blackCards);
+
+        assertEquals(Player.Black, resultSameFourOfKind.getPlayer());
+        assertEquals(ResultOption.W,resultSameFourOfKind.getResult());
     }
 
 

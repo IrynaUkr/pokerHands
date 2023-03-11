@@ -11,13 +11,57 @@ public class PokerHandsComparator implements HandsComparator {
         Rank blackHandRank = calculateRank(blackHand);
         Rank whiteHandRank = calculateRank(whiteHand);
 
-        if (whiteHandRank.rank > blackHandRank.rank) {
-            return new GameResult(ResultOption.W, Player.White);
-        } else if (whiteHandRank.rank < blackHandRank.rank) {
-            return new GameResult(ResultOption.W, Player.Black);
+        return getGameResultByRunk(whiteHandRank.rank, blackHandRank.rank);
+    }
+
+    public GameResult compareHandsIfRankIsSame(Rank rank, Card[] whiteHand, Card[] blackHand) {
+        if (rank.equals(Rank.Straight_flush)) {
+            //Ranked by the highest card in the hand.
+            return getResultSameHandsStraightFlush(whiteHand, blackHand);
+        }
+        if (rank.equals(Rank.Four_of_a_kind)) {
+            // Ranked by the value of the 4 cards.
+            return getResultSameFourOfKind(whiteHand, blackHand);
         }
 
         return new GameResult(ResultOption.T, null);
+    }
+
+    public GameResult getResultSameFourOfKind(Card[] whiteHand, Card[] blackHand) {
+        int whiteHandRank = Integer.parseInt(getRankOfTheMostFrequentCard(whiteHand));
+        int blackHandRank = Integer.parseInt(getRankOfTheMostFrequentCard(blackHand));
+        return getGameResultByRunk(whiteHandRank, blackHandRank);
+    }
+
+    private static GameResult getGameResultByRunk(int whiteHandRank, int blackHandRank) {
+        if (whiteHandRank > blackHandRank) {
+            return new GameResult(ResultOption.W, Player.White);
+        } else if (whiteHandRank < blackHandRank) {
+            return new GameResult(ResultOption.W, Player.Black);
+        }
+        return new GameResult(ResultOption.T, null);
+    }
+
+    private static String getRankOfTheMostFrequentCard(Card[] whiteHand) {
+        Optional<Map.Entry<String, Integer>> first = getValueFrequency(whiteHand)
+                .entrySet()
+                .stream()
+                .filter(entry -> entry.getValue() == 4)
+                .findFirst();
+       if(first.isPresent()){
+           return first.get().getKey();
+       } else{
+           throw new IllegalArgumentException("there is not four of kind case");
+       }
+    }
+
+
+    public GameResult getResultSameHandsStraightFlush(Card[] whiteHand, Card[] blackHand) {
+        if (getHighCard(whiteHand).compareTo(getHighCard(blackHand)) > 0) {
+            return new GameResult(ResultOption.W, Player.White);
+        } else if (getHighCard(whiteHand).compareTo(getHighCard(blackHand)) < 0) {
+            return new GameResult(ResultOption.W, Player.Black);
+        } else return new GameResult(ResultOption.T, null);
     }
 
     private Rank calculateRank(Card[] hand) {
@@ -30,7 +74,24 @@ public class PokerHandsComparator implements HandsComparator {
         if (isFourOfAKind(hand)) {
             return Rank.Four_of_a_kind;
         }
-
+        if (isFullHouse(hand)) {
+            return Rank.Full_House;
+        }
+        if (isFlush(hand)) {
+            return Rank.Flush;
+        }
+        if (isStraight(hand)) {
+            return Rank.Straight;
+        }
+        if (isThreeOfKind(hand)) {
+            return Rank.Three_of_a_Kind;
+        }
+        if (isTwoPairs(hand)) {
+            return Rank.Two_Pairs;
+        }
+        if (isOnePairPresent(hand)) {
+            return Rank.Pair;
+        }
         return Rank.High_Card;
     }
 
@@ -111,12 +172,12 @@ public class PokerHandsComparator implements HandsComparator {
 
     public boolean isTwoPairs(Card[] hand) {
         //The hand contains 2 different pairs.
-        return  getPairsSetValues(hand).size() == 2;
+        return getPairsSetValues(hand).size() == 2;
 
     }
 
-    public boolean isOnePairPresent(Card[] hand){
-        return  getPairsSetValues(hand).size() == 1;
+    public boolean isOnePairPresent(Card[] hand) {
+        return getPairsSetValues(hand).size() == 1;
     }
 
     private static Set<String> getPairsSetValues(Card[] hand) {
@@ -137,6 +198,11 @@ public class PokerHandsComparator implements HandsComparator {
                 .map(c -> c.getValue().symbol)
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+
+    public Card getHighCard(Card[] hand) {
+        return Arrays.stream(hand).max(Card::compareTo).get();
     }
 
 }

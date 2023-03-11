@@ -7,7 +7,7 @@ import java.util.Objects;
 
 @AllArgsConstructor
 @Getter
-public class Card {
+public class Card implements Comparable<Card>{
     private final Club club;
     private final Value value;
 
@@ -23,4 +23,10 @@ public class Card {
     public int hashCode() {
         return Objects.hash(getClub(), getValue());
     }
+
+    @Override
+    public int compareTo(Card otherCard) {
+        return this.getValue().order - otherCard.getValue().order;
+    }
+
 }
