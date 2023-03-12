@@ -38,12 +38,13 @@ public class RankCalculator {
         if (isTwoPairs(hand)) {
             return Two_Pairs;
         }
-        if (isOnePairPresent(hand)) {
+        if (isOnePair(hand)) {
             return Pair;
         }
         return High_Card;
     }
-    public static  boolean isStraightFlush(Card[] hand) {
+
+    public static boolean isStraightFlush(Card[] hand) {
         Club firstClub = hand[0].getClub();
         if (!(Arrays.stream(hand).allMatch(h -> h.getClub() == firstClub))) {
             return false;
@@ -108,7 +109,7 @@ public class RankCalculator {
 
     }
 
-    public static boolean isOnePairPresent(Card[] hand) {
+    public static boolean isOnePair(Card[] hand) {
         return getPairsSetValues(hand).size() == 1;
     }
 
@@ -145,4 +146,5 @@ public class RankCalculator {
         }
         return frequency;
     }
+
 }

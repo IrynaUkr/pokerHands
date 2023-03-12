@@ -5,10 +5,9 @@ import org.example.entity.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.example.engine.PokerHandsComparator.*;
+import static org.example.engine.PokerHandsComparator.getGameResultByRank;
 import static org.example.engine.RankCalculator.getValueFrequency;
 import static org.example.entity.Rank.*;
-import static org.example.entity.Rank.Pair;
 
 public class SameRankHandsService {
     private SameRankHandsService() {
@@ -192,6 +191,7 @@ public class SameRankHandsService {
             throw new IllegalArgumentException("there is not four of kind case");
         }
     }
+
     public static GameResult getResultHighHand(Card[] whiteHand, Card[] blackHand) {
         Arrays.sort(whiteHand);
         Arrays.sort(blackHand);

@@ -1,0 +1,19 @@
+hand, rankValue
+2H 3H 4H 5H 6H,  Straight_flush
+TD JD QD KD AD,  Straight_flush
+TD TS TH TC 2H,  Four_of_a_kind
+2D 2S 2H 2C 4H,  Four_of_a_kind
+2D 2S 2H 4C 4H,  Full_House
+QD QS QH 4C 4H,  Full_House
+2D JD 4D KD AD,  Flush
+6S 7S 4S 8S 2S,  Flush
+TS JH QC KD AD,  Straight
+2S 3H 4C 5D 6S,  Straight
+3S 3H 3C TD 6S,  Three_of_a_Kind
+TS 4H 3C TD TS,  Three_of_a_Kind
+2S 2D TH TS AD,  Two_Pairs
+QS QD TH TS 3D,  Two_Pairs
+3S 3H QC TD 6S,  Pair
+QS 3H QC TD 6S,  Pair
+2S JH 5C KD 7D,  High_Card
+3S JH 5C 9D AD,  High_Card

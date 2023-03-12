@@ -7,7 +7,7 @@ import java.util.Objects;
 
 @AllArgsConstructor
 @Getter
-public class Card implements Comparable<Card>{
+public class Card implements Comparable<Card> {
     private final Club club;
     private final Value value;
 
