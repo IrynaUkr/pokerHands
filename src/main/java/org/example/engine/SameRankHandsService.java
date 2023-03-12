@@ -90,8 +90,10 @@ public class SameRankHandsService {
             } else if (whiteRanks.get(0) < blackRanks.get(0)) {
                 return new GameResult(ResultOption.W, Player.Black, "");
             } else {
+
                 Integer whiteRank = twoPairContainerWhite.getRemainingValue().order;
                 Integer blackRank = twoPairContainerBlack.getRemainingValue().order;
+
                 if (whiteRank > blackRank) {
                     return new GameResult(ResultOption.W, Player.White, "");
                 } else if (whiteRank < blackRank) {
@@ -111,10 +113,10 @@ public class SameRankHandsService {
         List<Value> whitePairs = new ArrayList<>();
         Value whileLeftOver = Value.TWO;
         for (Map.Entry<String, Integer> entry : entries) {
-            if (entry.getValue().equals(2)) {
-                whitePairs.add(Value.valueOf(entry.getKey()));
+            if (entry.getValue()==(2)) {
+                whitePairs.add(Value.getValueByChar(entry.getKey()));
             } else {
-                whileLeftOver = Value.valueOf(entry.getKey());
+                whileLeftOver = Value.getValueByChar(entry.getKey());
             }
         }
         twoPairsContainer.setTwoPairsValues(whitePairs);
@@ -154,15 +156,20 @@ public class SameRankHandsService {
     }
 
     public static GameResult getResultSameFullHouseAndThreeOfAKind(Card[] whiteHand, Card[] blackHand) {
-        Rank whiteHandRank = Rank.valueOf(getRankOfTheMostFrequentCard(whiteHand, 3));
-        Rank blackHandRank = Rank.valueOf(getRankOfTheMostFrequentCard(blackHand, 3));
+        Rank whiteHandRank = Rank.valueOf(getValueOfTheMostFrequentCard(whiteHand, 3));
+        Rank blackHandRank = Rank.valueOf(getValueOfTheMostFrequentCard(blackHand, 3));
         return getGameResultByRank(whiteHandRank, blackHandRank);
     }
 
     public static GameResult getResultSameFourOfKind(Card[] whiteHand, Card[] blackHand) {
-        Rank whiteHandRank = Rank.valueOf(getRankOfTheMostFrequentCard(whiteHand, 4));
-        Rank blackHandRank = Rank.valueOf(getRankOfTheMostFrequentCard(blackHand, 4));
-        return getGameResultByRank(whiteHandRank, blackHandRank);
+        Value valueWhite = Value.getValueByChar(getValueOfTheMostFrequentCard(whiteHand, 4));
+        Value valueBlack = Value.getValueByChar(getValueOfTheMostFrequentCard(blackHand, 4));
+        Integer order = valueWhite.order;
+        if (order.compareTo(valueBlack.order) > 0) {
+            return new GameResult(ResultOption.W, Player.White, "with FourOfKind:" + valueWhite + "over" + valueBlack);
+        } else if (order.compareTo(valueBlack.order) < 0) {
+            return new GameResult(ResultOption.W, Player.Black, "with FourOfKind:" + valueBlack + "over" + valueWhite);
+        } else return new GameResult(ResultOption.T, null, "Tie");
     }
 
     public static GameResult getResultSameHandsStraightFlush(Card[] whiteHand, Card[] blackHand) {
@@ -179,7 +186,7 @@ public class SameRankHandsService {
         return Arrays.stream(hand).max(Card::compareTo).get();
     }
 
-    static String getRankOfTheMostFrequentCard(Card[] cards, int frequency) {
+    static String getValueOfTheMostFrequentCard(Card[] cards, int frequency) {
         Optional<Map.Entry<String, Integer>> first = getValueFrequency(cards)
                 .entrySet()
                 .stream()
