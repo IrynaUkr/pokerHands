@@ -4,19 +4,13 @@ import org.example.entity.*;
 import org.example.parser.InputParser;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.example.engine.SameRankHandsService.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SameRankHandsServiceTest {
-
-    @Test
-    void getGameResultIfSameHandsRanksTest() {
-
-    }
 
     @Test
     void getResultSameTwoPairsTest() {

@@ -5,11 +5,13 @@ import org.example.entity.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.example.engine.PokerHandsComparator.getGameResultByRank;
 import static org.example.engine.RankCalculator.getValueFrequency;
 import static org.example.entity.Rank.*;
 
 public class SameRankHandsService {
+
+    public static final String WITH_HIGH_CARD = "with high card";
+
     private SameRankHandsService() {
     }
 
@@ -26,7 +28,7 @@ public class SameRankHandsService {
             // Ranked by the value of the 3 cards.
             return getResultSameFullHouseAndThreeOfAKind(whiteHand, blackHand);
         }
-        if (rank.equals(Flush) || rank.equals(Straight)) {
+        if (rank.equals(Flush) || rank.equals(Straight)|| rank.equals(High_Card)) {
             //Hands are ranked using the rules for High Card.
             return getResultHighHand(whiteHand, blackHand);
         }
@@ -41,6 +43,7 @@ public class SameRankHandsService {
             // Hands with the same highest pair are ranked by the value of their other pair.
             // If these values are the same the hands are ranked by the value of the remaining card.
             return getResultSameOnePair(whiteHand, blackHand);
+
         }
         return new GameResult(ResultOption.T, null, "Tie");
     }
@@ -59,9 +62,9 @@ public class SameRankHandsService {
         Integer whiteRank = onePairContainerWhite.getTwoPairValue().order;
         Integer blackRank = onePairContainerBlack.getTwoPairValue().order;
         if (whiteRank > blackRank) {
-            return new GameResult(ResultOption.W, Player.White, "with high card");
+            return new GameResult(ResultOption.W, Player.White, WITH_HIGH_CARD);
         } else if (whiteRank < blackRank) {
-            return new GameResult(ResultOption.W, Player.Black, "with high card");
+            return new GameResult(ResultOption.W, Player.Black, WITH_HIGH_CARD);
         } else {
             return getHighHandFromRanks(whiteRanks, blackRanks);
         }
@@ -99,11 +102,10 @@ public class SameRankHandsService {
                 } else if (whiteRank < blackRank) {
                     return new GameResult(ResultOption.W, Player.Black, "");
                 } else {
-                    return new GameResult(ResultOption.T, null, "");
+                    return new GameResult(ResultOption.T, Player.Tie, "");
                 }
             }
         }
-
     }
 
     public static TwoPairsContainer getTwoPairContainer(Card[] hand) {
@@ -147,27 +149,31 @@ public class SameRankHandsService {
         blackRanks.sort(Comparator.naturalOrder());
         for (int i = whiteRanks.size() - 1; i >= 0; i--) {
             if (whiteRanks.get(i).compareTo(blackRanks.get(i)) > 0) {
-                return new GameResult(ResultOption.W, Player.White, "with high card" + whiteRanks.get(i));
+                return new GameResult(ResultOption.W, Player.White, WITH_HIGH_CARD + whiteRanks.get(i));
             } else if (whiteRanks.get(i).compareTo(blackRanks.get(i)) < 0) {
-                return new GameResult(ResultOption.W, Player.Black, "with high card" + blackRanks.get(i));
+                return new GameResult(ResultOption.W, Player.Black, WITH_HIGH_CARD + blackRanks.get(i));
             }
         }
         return new GameResult(ResultOption.T, null, "Tie");
     }
 
     public static GameResult getResultSameFullHouseAndThreeOfAKind(Card[] whiteHand, Card[] blackHand) {
-        Rank whiteHandRank = Rank.valueOf(getValueOfTheMostFrequentCard(whiteHand, 3));
-        Rank blackHandRank = Rank.valueOf(getValueOfTheMostFrequentCard(blackHand, 3));
-        return getGameResultByRank(whiteHandRank, blackHandRank);
+        Value valueWhite = Value.getValueByChar(getValueOfTheMostFrequentCard(whiteHand, 3));
+        Value valueBlack = Value.getValueByChar(getValueOfTheMostFrequentCard(blackHand, 3));
+        if (valueWhite.order.compareTo(valueBlack.order) > 0) {
+            return new GameResult(ResultOption.W, Player.White,  valueWhite + "over" + valueBlack);
+        } else if (valueWhite.order.compareTo(valueBlack.order) < 0) {
+            return new GameResult(ResultOption.W, Player.Black,  valueBlack + "over" + valueWhite);
+        } else return new GameResult(ResultOption.T, null, "Tie");
     }
 
     public static GameResult getResultSameFourOfKind(Card[] whiteHand, Card[] blackHand) {
         Value valueWhite = Value.getValueByChar(getValueOfTheMostFrequentCard(whiteHand, 4));
         Value valueBlack = Value.getValueByChar(getValueOfTheMostFrequentCard(blackHand, 4));
-        Integer order = valueWhite.order;
-        if (order.compareTo(valueBlack.order) > 0) {
+
+        if (valueWhite.order.compareTo(valueBlack.order) > 0) {
             return new GameResult(ResultOption.W, Player.White, "with FourOfKind:" + valueWhite + "over" + valueBlack);
-        } else if (order.compareTo(valueBlack.order) < 0) {
+        } else if (valueWhite.order.compareTo(valueBlack.order) < 0) {
             return new GameResult(ResultOption.W, Player.Black, "with FourOfKind:" + valueBlack + "over" + valueWhite);
         } else return new GameResult(ResultOption.T, null, "Tie");
     }
@@ -204,12 +210,12 @@ public class SameRankHandsService {
         Arrays.sort(blackHand);
         for (int i = whiteHand.length - 1; i >= 0; i--) {
             if (whiteHand[i].compareTo(blackHand[i]) > 0) {
-                return new GameResult(ResultOption.W, Player.White, "with high card" + whiteHand[i].getValue());
+                return new GameResult(ResultOption.W, Player.White, " with high card " + whiteHand[i].getValue());
             } else if (whiteHand[i].compareTo(blackHand[i]) < 0) {
-                return new GameResult(ResultOption.W, Player.Black, "with high card" + blackHand[i].getValue());
+                return new GameResult(ResultOption.W, Player.Black, " with high card " + blackHand[i].getValue());
             }
         }
-        return new GameResult(ResultOption.T, null, "Tie");
+        return new GameResult(ResultOption.T, Player.Tie, "Tie");
     }
 
 }

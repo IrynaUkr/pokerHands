@@ -2,11 +2,13 @@ package org.example.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.Objects;
 
 @AllArgsConstructor
 @Getter
+@ToString
 public class Card implements Comparable<Card> {
     private final Club club;
     private final Value value;
