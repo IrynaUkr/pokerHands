@@ -24,35 +24,21 @@ public enum Value {
     }
 
     public static Value getValueByChar(String glif) {
-        switch (glif) {
-            case "2":
-                return TWO;
-            case "3":
-                return THREE;
-            case "4":
-                return FOUR;
-            case "5":
-                return FIVE;
-            case "6":
-                return SIX;
-            case "7":
-                return SEVEN;
-            case "8":
-                return EIGHT;
-            case "9":
-                return NINE;
-            case "T":
-                return TEN;
-            case "J":
-                return JACK;
-            case "Q":
-                return QUEEN;
-            case "K":
-                return KING;
-            case "A":
-                return ACE;
-            default:
-                throw new IllegalStateException("Unexpected value: " + glif);
-        }
+        return switch (glif) {
+            case "2" -> TWO;
+            case "3" -> THREE;
+            case "4" -> FOUR;
+            case "5" -> FIVE;
+            case "6" -> SIX;
+            case "7" -> SEVEN;
+            case "8" -> EIGHT;
+            case "9" -> NINE;
+            case "T" -> TEN;
+            case "J" -> JACK;
+            case "Q" -> QUEEN;
+            case "K" -> KING;
+            case "A" -> ACE;
+            default -> throw new IllegalStateException("Unexpected value: " + glif);
+        };
     }
 }

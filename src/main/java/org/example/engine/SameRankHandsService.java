@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.example.engine.PokerHandsComparator.*;
+import static org.example.engine.RankCalculator.getValueFrequency;
 import static org.example.entity.Rank.*;
 import static org.example.entity.Rank.Pair;
 
@@ -13,7 +14,7 @@ public class SameRankHandsService {
     private SameRankHandsService() {
     }
 
-    public static GameResult compareHandsIfRanksAreSame(Rank rank, Card[] whiteHand, Card[] blackHand) {
+    public static GameResult getGameResultIfSameHandsRanks(Rank rank, Card[] whiteHand, Card[] blackHand) {
         if (rank.equals(Straight_flush)) {
             //Ranked by the highest card in the hand.
             return getResultSameHandsStraightFlush(whiteHand, blackHand);
@@ -59,9 +60,9 @@ public class SameRankHandsService {
         Integer whiteRank = onePairContainerWhite.getTwoPairValue().order;
         Integer blackRank = onePairContainerBlack.getTwoPairValue().order;
         if (whiteRank > blackRank) {
-            return new GameResult(ResultOption.W, Player.White, "");
+            return new GameResult(ResultOption.W, Player.White, "with high card");
         } else if (whiteRank < blackRank) {
-            return new GameResult(ResultOption.W, Player.Black, "");
+            return new GameResult(ResultOption.W, Player.Black, "with high card");
         } else {
             return getHighHandFromRanks(whiteRanks, blackRanks);
         }
@@ -107,10 +108,10 @@ public class SameRankHandsService {
     public static TwoPairsContainer getTwoPairContainer(Card[] hand) {
         TwoPairsContainer twoPairsContainer = new TwoPairsContainer();
 
-        Set<Map.Entry<String, Integer>> whiteEntries = getValueFrequency(hand).entrySet();
+        Set<Map.Entry<String, Integer>> entries = getValueFrequency(hand).entrySet();
         List<Value> whitePairs = new ArrayList<>();
         Value whileLeftOver = Value.TWO;
-        for (Map.Entry<String, Integer> entry : whiteEntries) {
+        for (Map.Entry<String, Integer> entry : entries) {
             if (entry.getValue().equals(2)) {
                 whitePairs.add(Value.valueOf(entry.getKey()));
             } else {
@@ -154,14 +155,14 @@ public class SameRankHandsService {
     }
 
     public static GameResult getResultSameFullHouseAndThreeOfAKind(Card[] whiteHand, Card[] blackHand) {
-        int whiteHandRank = Integer.parseInt(getRankOfTheMostFrequentCard(whiteHand, 3));
-        int blackHandRank = Integer.parseInt(getRankOfTheMostFrequentCard(blackHand, 3));
+        Rank whiteHandRank = Rank.valueOf(getRankOfTheMostFrequentCard(whiteHand, 3));
+        Rank blackHandRank = Rank.valueOf(getRankOfTheMostFrequentCard(blackHand, 3));
         return getGameResultByRank(whiteHandRank, blackHandRank);
     }
 
     public static GameResult getResultSameFourOfKind(Card[] whiteHand, Card[] blackHand) {
-        int whiteHandRank = Integer.parseInt(getRankOfTheMostFrequentCard(whiteHand, 4));
-        int blackHandRank = Integer.parseInt(getRankOfTheMostFrequentCard(blackHand, 4));
+        Rank whiteHandRank = Rank.valueOf(getRankOfTheMostFrequentCard(whiteHand, 4));
+        Rank blackHandRank = Rank.valueOf(getRankOfTheMostFrequentCard(blackHand, 4));
         return getGameResultByRank(whiteHandRank, blackHandRank);
     }
 
@@ -177,6 +178,31 @@ public class SameRankHandsService {
 
     public static Card getHighCard(Card[] hand) {
         return Arrays.stream(hand).max(Card::compareTo).get();
+    }
+
+    static String getRankOfTheMostFrequentCard(Card[] cards, int frequency) {
+        Optional<Map.Entry<String, Integer>> first = getValueFrequency(cards)
+                .entrySet()
+                .stream()
+                .filter(entry -> entry.getValue() == frequency)
+                .findFirst();
+        if (first.isPresent()) {
+            return first.get().getKey();
+        } else {
+            throw new IllegalArgumentException("there is not four of kind case");
+        }
+    }
+    public static GameResult getResultHighHand(Card[] whiteHand, Card[] blackHand) {
+        Arrays.sort(whiteHand);
+        Arrays.sort(blackHand);
+        for (int i = whiteHand.length - 1; i >= 0; i--) {
+            if (whiteHand[i].compareTo(blackHand[i]) > 0) {
+                return new GameResult(ResultOption.W, Player.White, "with high card" + whiteHand[i].getValue());
+            } else if (whiteHand[i].compareTo(blackHand[i]) < 0) {
+                return new GameResult(ResultOption.W, Player.Black, "with high card" + blackHand[i].getValue());
+            }
+        }
+        return new GameResult(ResultOption.T, null, "Tie");
     }
 
 }
