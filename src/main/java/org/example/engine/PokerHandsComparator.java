@@ -5,65 +5,39 @@ import org.example.entity.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.example.engine.SameRankHandsService.compareHandsIfRanksAreSame;
+import static org.example.entity.Rank.*;
+
 public class PokerHandsComparator implements HandsComparator {
     @Override
     public GameResult compareHands(Card[] blackHand, Card[] whiteHand) {
         Rank blackHandRank = calculateRank(blackHand);
         Rank whiteHandRank = calculateRank(whiteHand);
 
+        if (blackHandRank == whiteHandRank) {
+            return compareHandsIfRanksAreSame(whiteHandRank, blackHand, whiteHand);
+        }
+
         return getGameResultByRank(whiteHandRank.rank, blackHandRank.rank);
     }
 
-    public GameResult compareHandsIfRanksAreSame(Rank rank, Card[] whiteHand, Card[] blackHand) {
-        if (rank.equals(Rank.Straight_flush)) {
-            //Ranked by the highest card in the hand.
-            return getResultSameHandsStraightFlush(whiteHand, blackHand);
-        }
-        if (rank.equals(Rank.Four_of_a_kind)) {
-            // Ranked by the value of the 4 cards.
-            return getResultSameFourOfKind(whiteHand, blackHand);
-        }
-        if (rank.equals(Rank.Full_House)) {
-            // Ranked by the value of the 3 cards.
-            return getResultSameFullHouse(whiteHand, blackHand);
-        }
-        if (rank.equals(Rank.Flush)) {
-            //Hands which are both flushes are ranked using the rules for High Card.
-            return getResultSameFlush(whiteHand, blackHand);
-        }
-        return new GameResult(ResultOption.T, null, "Tie");
-    }
 
-    private GameResult getResultSameFlush(Card[] whiteHand, Card[] blackHand) {
-        return getResultHighHand(whiteHand, blackHand);
-    }
 
-    public GameResult getResultHighHand(Card[] whiteHand, Card[] blackHand) {
+    public  static GameResult getResultHighHand(Card[] whiteHand, Card[] blackHand) {
         Arrays.sort(whiteHand);
         Arrays.sort(blackHand);
-        for (int i = 4; i >= 0; i--){
-            if(whiteHand[i].compareTo(blackHand[i])>0){
-                return new GameResult(ResultOption.W, Player.White, "with high card"+whiteHand[i].getValue());
-            } else if (whiteHand[i].compareTo(blackHand[i])<0) {
-                return new GameResult(ResultOption.W, Player.Black, "with high card" + blackHand[i].getValue() );
+        for (int i = whiteHand.length - 1; i >= 0; i--) {
+            if (whiteHand[i].compareTo(blackHand[i]) > 0) {
+                return new GameResult(ResultOption.W, Player.White, "with high card" + whiteHand[i].getValue());
+            } else if (whiteHand[i].compareTo(blackHand[i]) < 0) {
+                return new GameResult(ResultOption.W, Player.Black, "with high card" + blackHand[i].getValue());
             }
         }
         return new GameResult(ResultOption.T, null, "Tie");
     }
 
-    public GameResult getResultSameFullHouse(Card[] whiteHand, Card[] blackHand) {
-        int whiteHandRank = Integer.parseInt(getRankOfTheMostFrequentCard(whiteHand, 3));
-        int blackHandRank = Integer.parseInt(getRankOfTheMostFrequentCard(blackHand, 3));
-        return getGameResultByRank(whiteHandRank, blackHandRank);
-    }
 
-    public GameResult getResultSameFourOfKind(Card[] whiteHand, Card[] blackHand) {
-        int whiteHandRank = Integer.parseInt(getRankOfTheMostFrequentCard(whiteHand, 4));
-        int blackHandRank = Integer.parseInt(getRankOfTheMostFrequentCard(blackHand, 4));
-        return getGameResultByRank(whiteHandRank, blackHandRank);
-    }
-
-    private static GameResult getGameResultByRank(int whiteHandRank, int blackHandRank) {
+    static GameResult getGameResultByRank(int whiteHandRank, int blackHandRank) {
         if (whiteHandRank > blackHandRank) {
             return new GameResult(ResultOption.W, Player.White, "");
         } else if (whiteHandRank < blackHandRank) {
@@ -72,7 +46,7 @@ public class PokerHandsComparator implements HandsComparator {
         return new GameResult(ResultOption.T, null, "Tie");
     }
 
-    private static String getRankOfTheMostFrequentCard(Card[] cards, int frequency) {
+    static String getRankOfTheMostFrequentCard(Card[] cards, int frequency) {
         Optional<Map.Entry<String, Integer>> first = getValueFrequency(cards)
                 .entrySet()
                 .stream()
@@ -86,45 +60,37 @@ public class PokerHandsComparator implements HandsComparator {
     }
 
 
-    public GameResult getResultSameHandsStraightFlush(Card[] whiteHand, Card[] blackHand) {
-        Card whiteHighCard = getHighCard(whiteHand);
-        Card blackHighCard = getHighCard(blackHand);
-        if (whiteHighCard.compareTo(blackHighCard) > 0) {
-            return new GameResult(ResultOption.W, Player.White, "with straight flush:"+whiteHighCard+"over"+blackHighCard );
-        } else if (whiteHighCard.compareTo(blackHighCard) < 0) {
-            return new GameResult(ResultOption.W, Player.Black, "with straight flush:"+blackHighCard+"over"+whiteHighCard );
-        } else return new GameResult(ResultOption.T, null, "Tie");
-    }
+
 
     private Rank calculateRank(Card[] hand) {
         if (hand.length != 5) {
             throw new IllegalArgumentException();
         }
         if (isStraightFlush(hand)) {
-            return Rank.Straight_flush;
+            return Straight_flush;
         }
         if (isFourOfAKind(hand)) {
-            return Rank.Four_of_a_kind;
+            return Four_of_a_kind;
         }
         if (isFullHouse(hand)) {
-            return Rank.Full_House;
+            return Full_House;
         }
         if (isFlush(hand)) {
-            return Rank.Flush;
+            return Flush;
         }
         if (isStraight(hand)) {
-            return Rank.Straight;
+            return Straight;
         }
         if (isThreeOfKind(hand)) {
-            return Rank.Three_of_a_Kind;
+            return Three_of_a_Kind;
         }
         if (isTwoPairs(hand)) {
-            return Rank.Two_Pairs;
+            return Two_Pairs;
         }
         if (isOnePairPresent(hand)) {
-            return Rank.Pair;
+            return Pair;
         }
-        return Rank.High_Card;
+        return High_Card;
     }
 
 
@@ -154,7 +120,7 @@ public class PokerHandsComparator implements HandsComparator {
         return frequency.size() == 2;
     }
 
-    private static HashMap<String, Integer> getValueFrequency(Card[] hand) {
+    static HashMap<String, Integer> getValueFrequency(Card[] hand) {
         HashMap<String, Integer> frequency = new HashMap<>();
         for (Card card : hand) {
             String symbol = card.getValue().symbol;
@@ -233,8 +199,6 @@ public class PokerHandsComparator implements HandsComparator {
     }
 
 
-    public Card getHighCard(Card[] hand) {
-        return Arrays.stream(hand).max(Card::compareTo).get();
-    }
+
 
 }
